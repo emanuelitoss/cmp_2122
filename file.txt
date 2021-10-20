@@ -8,7 +8,6 @@ git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
 //***** PULLING CHANGES *****//
 
     //before starting any work, this command ensures that you have the last version of files in the repo
-
     git pull -r
 
 //***** COMMITTING AND PUSHING CHANGES *****//
@@ -16,8 +15,7 @@ git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
     //add a new file in the repo or a modified file
     git add [FILE]
     git commit -m "Message you want to leave"
-    //to backup in GitHub
-    git push
+    git push	//to backup in GitHub
 
     //You might execute this command before pushing
     git pull -r
@@ -33,3 +31,11 @@ git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
     Whenever you see the messagge
     "Automatic merge failed; fix conflicts and then commit the result."
     How do you solve it? Google
+
+//***** UNING BRANCHES *****//
+
+    git branch	//to see branches. Your position is next to the star *
+    git branch <branch_name>	//creates a new branch from main
+    git checkout <branch_name>	//to move into branch_name
+    git push --set-upstream origin <branch_name>	//to move the new branch from your laptop to GitHub
+    git branch -r <branch_name>	//to delete a branch
