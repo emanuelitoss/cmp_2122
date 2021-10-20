@@ -38,7 +38,7 @@ class complex{
 	double x_;
 	double y_;
 };
-
+/*
 complex complex::operator+(const complex& rhs) const;
 
 complex complex::operator-(const complex& rhs) const;
@@ -57,3 +57,4 @@ const complex& complex::operator-=(const complex& rhs);
 const complex& complex::operator*=(const complex& rhs);
 
 const complex& complex::operator/=(const complex& rhs);
+*/

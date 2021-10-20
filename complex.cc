@@ -2,58 +2,40 @@
 #include <cmath>
 #include "complex.h"
 
-class complex{
-	public:
 
-	//constructors
-	complex(){
-		x_ = 0;
-		y_ = 0;
-	}
-	complex(const double& k){
-        x_ = k;
-        y_ = 0;
-    }
-	complex(const double& x, const double& y){
-		x_ = x;
-		y_ = y;
-	}
-	
-	//setters
-	void setX(const double& x){x_ = x;}
-	void setY(const double& y){y_ =  y;}
+//constructors
+complex::complex(){
+	x_ = 0;
+	y_ = 0;
+}
+complex::complex(const double& k){
+    x_ = k;
+    y_ = 0;
+}
+complex::complex(const double& x, const double& y){
+	x_ = x;
+	y_ = y;
+}
 
-	//getters
-	double re() const {return x_;}
-    double im() const {return y_;}
-    double mag() const {return sqrt(x_*x_+y_*y_);}
-	double phase() const {
-		if(x_ == 0) return M_PI/2;
-		else return atan(y_/x_);
-	}
+//setters
+void complex::setX(const double& x){x_ = x;}
+void complex::setY(const double& y){y_ =  y;}
 
-    //operators
-    complex operator+(const complex& rhs) const;
-    complex operator-(const complex& rhs) const;
-    complex operator*(const complex& rhs) const;
-    complex operator/(const complex& rhs) const;
+//getters
+double complex::re() const {return x_;}
+double complex::im() const {return y_;}
+double complex::mag() const {return sqrt(x_*x_+y_*y_);}
+double complex::phase() const {
+	if(x_ == 0) return M_PI/2;
+	else return atan(y_/x_);
+}
 
-    const complex& operator=(const complex& rhs);
-    const complex& operator+=(const complex& rhs);
-    const complex& operator-=(const complex& rhs);
-    const complex& operator*=(const complex& rhs);
-    const complex& operator/=(const complex& rhs);
-
-	void print(){
+void complex::print(){
 		std::cout << re() << " +i" << im() <<
 		std::cout << mag() << "*exp(i" << phase() << ")" << std::endl;
 	}
 
-	private:
-	double x_;
-	double y_;
-};
-
+//overloaded operators
 complex complex::operator+(const complex& rhs) const{
 	double x = x_ + rhs.x_;
 	double y = y_ + rhs.y_;
@@ -80,7 +62,7 @@ complex complex::operator/(const complex& rhs) const{
 	return complex(x,y);
 }
 
-
+//overloaded operators with selfreturn
 const complex& complex::operator=(const complex& rhs){
 	x_ = rhs.x_;
 	y_ = rhs.y_;
