@@ -31,7 +31,7 @@ double complex::phase() const {
 }
 
 void complex::print(){
-		std::cout << re() << " +i" << im() <<
+		std::cout << re() << " +i" << im() << std::endl;
 		std::cout << mag() << "*exp(i" << phase() << ")" << std::endl;
 	}
 
