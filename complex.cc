@@ -31,8 +31,8 @@ double complex::phase() const {
 }
 
 void complex::print(){
-		std::cout << re() << " +i" << im() << std::endl;
-		std::cout << mag() << "*exp(i" << phase() << ")" << std::endl;
+		std::cout << re() << " +i" << im()
+		<< " o, in forma complessa, " << mag() << "*exp(i" << phase() << ")" << std::endl;
 	}
 
 //overloaded operators
