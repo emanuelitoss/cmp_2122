@@ -39,3 +39,10 @@ git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
     git checkout <branch_name>	//to move into branch_name
     git push --set-upstream origin <branch_name>	//to move the new branch from your laptop to GitHub
     git branch -r <branch_name>	//to delete a branch
+
+    git branch -m OLD-BRANCH-NAME NEW-BRANCH-NAME //to rename a local branch
+    //rename the branch on GitHub and add these commands in order to globally rename the branch
+    git fetch origin
+    git branch -u origin/NEW-BRANCH-NAME NEW-BRANCH-NAME
+    git remote set-head origin -a
+    git remote prune origin //this command is optional and removes tracking references to the old branch name
