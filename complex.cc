@@ -25,8 +25,10 @@ void complex::setY(const double& y){y_ = y;}
 double complex::re() const {return x_;}
 double complex::im() const {return y_;}
 double complex::mag() const {return sqrt(x_*x_+y_*y_);}
+//this function doesn't work. We have to check whenever we have to add a pi phase or not.
 double complex::phase() const {
-	if(x_ == 0) return M_PI/2;
+	if(x_ == 0 && y_ > 0) {return M_PI/2;}
+	else if(x_ == 0 && y_ < 0) {return -M_PI/2;}
 	else return atan(y_/x_);
 }
 
@@ -57,8 +59,8 @@ complex complex::operator*(const complex& rhs) const{
 complex complex::operator/(const complex& rhs) const{
 	double x = x_*rhs.x_ + y_*rhs.y_;
 	double y = y_*rhs.x_ - x_*rhs.y_;
-	x = x/(rhs.x_*rhs.x_ + rhs.y_*rhs.y_);
-	y = y/(rhs.x_*rhs.x_ + rhs.y_*rhs.y_);
+	x /= (rhs.mag()*rhs.mag());
+	y /= (rhs.mag()*rhs.mag());
 	return complex(x,y);
 }
 
@@ -81,16 +83,18 @@ const complex& complex::operator-=(const complex& rhs){
 	return *this;
 }
 
+//AGGIUSTARE!!!
 const complex& complex::operator*=(const complex& rhs){
-	x_ = x_*rhs.x_ - y_*rhs.y_;
-	y_ = x_*rhs.y_ + y_*rhs.x_;
+	x_ = (x_)*(rhs.x_) - (y_)*(rhs.y_);
+	y_ = (x_)*(rhs.y_) + (y_)*(rhs.x_);
 	return *this;
 }
 
+//AGGIUSTARE!!!
 const complex& complex::operator/=(const complex& rhs){
-    x_ = x_*rhs.x_ + y_*rhs.y_;
-	y_ = y_*rhs.x_ - x_*rhs.y_;
-	x_ = x_/(rhs.mag()*rhs.mag());
-	y_ = y_/(rhs.mag()*rhs.mag());
+    x_ = (x_)*(rhs.x_) + (y_)*(rhs.y_);
+	y_ = (y_)*(rhs.x_) - (x_)*(rhs.y_);
+	x_ /= (rhs.mag()*rhs.mag());
+	y_ /= (rhs.mag()*rhs.mag());
 	return *this;
 }
