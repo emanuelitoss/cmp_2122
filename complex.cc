@@ -19,7 +19,7 @@ complex::complex(const double& x, const double& y){
 
 //setters
 void complex::setX(const double& x){x_ = x;}
-void complex::setY(const double& y){y_ =  y;}
+void complex::setY(const double& y){y_ = y;}
 
 //getters
 double complex::re() const {return x_;}
