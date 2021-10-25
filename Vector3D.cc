@@ -27,12 +27,12 @@ double Vector3D::Z() const {return z_;}
 
 //other getters
 double Vector3D::magnitude() const {
-    return sqrt(x_**2 + y_**2 + z_**2);
+    return sqrt(x_*x_ + y_*y_ + z_*z_);
 }
 
 double Vector3D::theta() const {
     //particular case: vector in the polar plane (x,y,0)
-    if (z_ == 0) {return MPI/2;}
+    if (z_ == 0) {return M_PI/2;}
     else{
         return acos(z_/magnitude());
     }
@@ -40,20 +40,20 @@ double Vector3D::theta() const {
 
 double Vector3D::phi() const {
     //special cases in which arctg(y/x) doesn't exists
-    if (x_ == 0 && y_ > 0){return MPI/2;}
-    else if (x_ == 0 && y_ < 0){return - MPI/2;}
+    if (x_ == 0 && y_ > 0){return M_PI/2;}
+    else if (x_ == 0 && y_ < 0){return - M_PI/2;}
     //atan gives values in the interval [-PI/2;PI/2], so I have to specify whenever add a phase PI
-    else if (x_ < 0 && y_ > 0){return atan(y_/x_) + MPI;}
-    else if (x_ < 0 && y_ < 0){return atan(y_/x_) + MPI;}
+    else if (x_ < 0 && y_ > 0){return atan(y_/x_) + M_PI;}
+    else if (x_ < 0 && y_ < 0){return atan(y_/x_) + M_PI;}
     else return atan(y_/x_);
 }
 
 //OTHER MEMBER FUNCTIONS
-double Vector3D::scalarProduct(const Vector3D& vec){
+double Vector3D::ScalarProduct(const Vector3D& vec) const {
     return (x_ * vec.x_ + y_ * vec.y_ + z_ * vec.z_);
 }
 
-const Vector3D& Vector3D::vectorProduct(const Vector3D& vec){
+Vector3D Vector3D::VectorProduct(const Vector3D& vec) const {
     //three component of the new vector
     double a,b,c;
     a = y_*vec.z_ - z_*vec.y_;
@@ -63,14 +63,14 @@ const Vector3D& Vector3D::vectorProduct(const Vector3D& vec){
 }
 
 //angle between two vectors -->> Bad function, !
-double Vector3D::angle(const Vector3D& vec){
+double Vector3D::angle(const Vector3D& vec) const {
     //special case:
-    if (magnitude() == 0 | | vec.magnitude() == 0){
+    if (magnitude() == 0 || vec.magnitude() == 0){
         std::cout << "La magnitudine di un vettore è 0, non si può definire un angolo!" << std::endl;
         return 0;
     }
     //acos() gives return values betveen 0 and PI.
-    return acos(Vector3D::scalarProduct(vec)/vec.magnitude()/magnitude());
+    return acos(Vector3D::ScalarProduct(vec)/vec.magnitude()/magnitude());
 }
 
 //OVERLOAD OPERATORS
@@ -101,7 +101,7 @@ Vector3D Vector3D::operator*(const double& rhs) const {
 
 Vector3D Vector3D::operator/(const double& rhs) const {
     if(rhs == 0.){
-        std:cout << "Errore: non puoi dividere per zero, babbeo." << std::endl;
+        std::cout << "Errore: non puoi dividere per zero, babbeo." << std::endl;
         return Vector3D(0,0,0);
     }
     double x = x_/rhs;
