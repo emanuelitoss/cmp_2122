@@ -92,16 +92,20 @@ Vector3D Vector3D::operator-(const Vector3D& rhs) const{
 	return Vector3D(x,y,z);
 }
 
-Vector3D Vector3D::operator*(const double& k) const {
-    double x = k*x_;
-	double y = k*y_;
-    double z = k*z_;
+Vector3D Vector3D::operator*(const double& rhs) const {
+    double x = rhs*x_;
+	double y = rhs*y_;
+    double z = rhs*z_;
 	return Vector3D(x,y,z);
 }
 
-Vector3D Vector3D::operator/(const double& k) const {
-    double x = k/x_;
-	double y = k/y_;
-    double z = k/z_;
+Vector3D Vector3D::operator/(const double& rhs) const {
+    if(rhs == 0.){
+        std:cout << "Errore: non puoi dividere per zero, babbeo." << std::endl;
+        return Vector3D(0,0,0);
+    }
+    double x = x_/rhs;
+	double y = y_/rhs;
+    double z = z_/rhs;
 	return Vector3D(x,y,z);
 }
