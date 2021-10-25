@@ -1,2 +1,4 @@
 # Computing Methods for Physics
-2021 - 2022 course of Master Degree course in physics
+Master Degree course in Particle and Astroparticle Physics.
+Professor: Francesco Pannarale
+Academic Year: 2021/2022
