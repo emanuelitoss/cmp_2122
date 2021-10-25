@@ -1,9 +1,20 @@
 ////Some command lines to use git
 
+//to create a repo from GitHub
+
+    git remote add origin git@github.... 
+    git push -u origin main
+
 //to clone a pre-existing repo
 
-git clone https://.... (link)
-git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
+    git clone https://.... (link)
+    git [GITUSER]@[MACHINE HOSTNAME]:[REPOSITORY NAME]
+
+//to check the link with github
+
+    git remote -v //show all the links to remote
+    git rempote rm <nome> //removes a link
+    
 
 //***** PULLING CHANGES *****//
 
