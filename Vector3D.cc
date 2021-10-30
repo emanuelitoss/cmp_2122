@@ -34,7 +34,7 @@ double Vector3D::theta() const {
     //particular case: vector in the polar plane (x,y,0)
     if (magnitude() == 0) {
         std::cout << "Non può essere definito Theta!" << std::endl;
-        return 1;
+        return 0;
     }
     else{
         return acos(z_/magnitude());
@@ -50,7 +50,7 @@ double Vector3D::phi() const {
     else if (x_ < 0 && y_ <= 0){return atan(y_/x_) + M_PI;}
     else if (x_ == 0 && y_ == 0){
         std::cout << "Impossibile definire l'angolo phi" << std::endl;
-        return 1;
+        return 0;
     }
     else return atan(y_/x_);
 }
@@ -74,7 +74,7 @@ double Vector3D::angle(const Vector3D& vec) const {
     //special case:
     if (magnitude() == 0 || vec.magnitude() == 0){
         std::cout << "La magnitudine di un vettore è 0, non si può definire un angolo!" << std::endl;
-        return 1;
+        return 0;
     }
     //acos() gives return values betveen 0 and PI.
     return acos(Vector3D::ScalarProduct(vec)/vec.magnitude()/magnitude());
