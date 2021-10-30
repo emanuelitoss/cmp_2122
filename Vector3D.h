@@ -27,9 +27,10 @@ class Vector3D{
     double ScalarProduct(const Vector3D& rhs) const;
     Vector3D VectorProduct(const Vector3D& rhs) const;
 	
+	const Vector3D& operator=(const Vector3D& rhs);
     Vector3D operator+(const Vector3D& rhs) const;
     Vector3D operator-(const Vector3D& rhs) const;
-	Vector3D operator=(const Vector3D& rhs) const;
+	//Vector3D operator=(const Vector3D& rhs) const;
 	
     Vector3D operator*(const double& rhs) const;
     Vector3D operator/(const double& rhs) const;

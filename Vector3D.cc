@@ -32,7 +32,10 @@ double Vector3D::magnitude() const {
 
 double Vector3D::theta() const {
     //particular case: vector in the polar plane (x,y,0)
-    if (z_ == 0) {return M_PI/2;}
+    if (magnitude() == 0) {
+        std::cout << "Non può essere definito Theta!" << std::endl;
+        return 1;
+    }
     else{
         return acos(z_/magnitude());
     }
@@ -43,8 +46,12 @@ double Vector3D::phi() const {
     if (x_ == 0 && y_ > 0){return M_PI/2;}
     else if (x_ == 0 && y_ < 0){return - M_PI/2;}
     //atan gives values in the interval [-PI/2;PI/2], so I have to specify whenever add a phase PI
-    else if (x_ < 0 && y_ > 0){return atan(y_/x_) + M_PI;}
-    else if (x_ < 0 && y_ < 0){return atan(y_/x_) + M_PI;}
+    else if (x_ < 0 && y_ >= 0){return atan(y_/x_) + M_PI;}
+    else if (x_ < 0 && y_ <= 0){return atan(y_/x_) + M_PI;}
+    else if (x_ == 0 && y_ == 0){
+        std::cout << "Impossibile definire l'angolo phi" << std::endl;
+        return 1;
+    }
     else return atan(y_/x_);
 }
 
@@ -67,15 +74,18 @@ double Vector3D::angle(const Vector3D& vec) const {
     //special case:
     if (magnitude() == 0 || vec.magnitude() == 0){
         std::cout << "La magnitudine di un vettore è 0, non si può definire un angolo!" << std::endl;
-        return 0;
+        return 1;
     }
     //acos() gives return values betveen 0 and PI.
     return acos(Vector3D::ScalarProduct(vec)/vec.magnitude()/magnitude());
 }
 
 //OVERLOAD OPERATORS
-Vector3D Vector3D::operator=(const Vector3D& rhs) const {
-    return Vector3D(rhs.x_, rhs.y_, rhs.z_);
+const Vector3D& Vector3D::operator=(const Vector3D& rhs) {
+    x_ = rhs.x_;
+    y_ = rhs.y_;
+    z_ = rhs.z_;    
+    return *this;
 }
 
 Vector3D Vector3D::operator+(const Vector3D& rhs) const{
@@ -101,11 +111,15 @@ Vector3D Vector3D::operator*(const double& rhs) const {
 
 Vector3D Vector3D::operator/(const double& rhs) const {
     if(rhs == 0.){
-        std::cout << "Errore: non puoi dividere per zero, babbeo." << std::endl;
+        std::cout << "Errore: non puoi dividere per zero." << std::endl;
         return Vector3D(0,0,0);
     }
     double x = x_/rhs;
 	double y = y_/rhs;
     double z = z_/rhs;
 	return Vector3D(x,y,z);
+}
+
+void Vector3D::print(){
+    std::cout << "Components: " << x_ << ", " << y_ << ", " << z_ << std::endl;
 }
