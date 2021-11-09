@@ -36,8 +36,8 @@ int main(){
 
     // The two histograms instances (name, title, number of bins, range)
     int nbins = 100;
-    TH1F invariant_m_pi("invariant_m_pi", "distribution of invariant mass of pion", nbins, 0, 5.279);
-    TH1F invariant_m_K("invariant_m_K", "distribution of invariant mass of K", nbins, 0, 5.279);
+    TH1F invariant_m_pi("invariant_m_pi", "distribution of invariant mass of pion", nbins, 0, 5.279 + eps);
+    TH1F invariant_m_K("invariant_m_K", "distribution of invariant mass of K", nbins, 0, 5.279 + eps);
 
 // RANDOM MOMENTA GENERATION
 
@@ -45,18 +45,19 @@ int main(){
     TLorentzVector p4_B;
     double p_B = 0.300; // GeV
     // Flat metric, (- - - +) signature: m^2 = E^2 - p^2
-    p4_B.SetPxPyPzE(sqrt(p_B*p_B+m_B*m_B), 0, 0, p_B);
+    p4_B.SetPxPyPzE(p_B, 0, 0, sqrt(p_B*p_B+m_B*m_B));
     std::cout << ">>> Meson B in the lab:" << std::endl;
     p4_B.Print();
 
     //momentum of generated particles in the CoM system 
-    double p_star = sqrt((pow(m_B,4) + pow(m_pi,4) + pow(m_K,4) - 2*pow(m_K,2)*pow(m_pi,2) - 2*pow(m_K,2)*pow(m_B,2) - 2*pow(m_pi,2)*pow(m_B,2) ))/(2*m_B);
-    std::cout << ">>> Value of p* in the ceneter of mass system is:\t\t" << p_star << std::endl;
+    double p_star = sqrt(pow(m_B,4) + pow(m_pi,4) + pow(m_K,4) - 2*pow(m_K,2)*pow(m_pi,2) - 2*pow(m_K,2)*pow(m_B,2) - 2*pow(m_pi,2)*pow(m_B,2) )/(2*m_B);
+    std::cout << ">>> Value of p* in the ceneter of mass system is:\t" << p_star << std::endl;
     
 // RANDOM MOMENTA GENERATION
 
-    std::cout << ">>> Generating random sherical distribution for pion and K meson:" << std::endl;
-    
+    std::cout << ">>> Generating random sherical distribution for pion and K meson" << std::endl;
+    p4_B.BoostVector().Print();
+
     // Start up a new random generator... (we have a new: we will need a delete!)
     TRandom3* gen = new TRandom3();
     // ...exploiting the machine clock for the seed
@@ -64,35 +65,35 @@ int main(){
 
     //local variables
     double px_star, py_star, pz_star;
-    TLorentzVector p4_pi;
-    TLorentzVector p4_K;
+    TLorentzVector p4_pi, p4_K, p4_tot;
 
     // Loop on the measurements
     for(int i=0; i<Nevents; ++i){
 
         gen->Sphere(px_star, py_star, pz_star, p_star);
-        if (i%1000 == 0 )std::cout << px_star << "\t" << py_star << "\t" << pz_star << std::endl;
         //Generate values for momentum in random direction in the CoM system:
         p4_pi.SetPxPyPzE(px_star, py_star, pz_star, sqrt(p_star*p_star+m_pi*m_pi));
         p4_K.SetPxPyPzE(-px_star, -py_star, -pz_star, sqrt(p_star*p_star+m_K*m_K));
+        //if (i%500 == 0 ) p4_pi.Print();
         //Boosting these vectors from CoM to LAB frame
         p4_pi.Boost(p4_B.BoostVector());
         p4_K.Boost(p4_B.BoostVector());
+        //if (i%500 == 0 ) p4_pi.Print();
         //invariant masses of the two particles
-        invariant_m_pi.Fill(p4_pi.M());
-        invariant_m_K.Fill(p4_K.M());
+        p4_tot = p4_pi + p4_K;
+        invariant_m_pi.Fill(p4_tot.M());
 
     }
 
-//PLOTTING RESULTS
+//PLOTTING AND SAVING RESULTS
 
     TCanvas canv("canv", "canvas for plotting", 1280, 1024);
 
     invariant_m_pi.GetXaxis()->SetTitle("Invariant mass for #pi [GeV]");
-    invariant_m_K.GetXaxis()->SetTitle("Invariant mass for K [GeV]");
+    //invariant_m_K.GetXaxis()->SetTitle("Invariant mass for K [GeV]");
 
     invariant_m_pi.Draw();
-    invariant_m_K.Draw();
+    //invariant_m_K.Draw();
 
     canv.SaveAs("./true-mass.pdf");
 
@@ -102,7 +103,7 @@ int main(){
 
     //Writing files
     invariant_m_pi.Write();
-    invariant_m_K.Write();
+    //invariant_m_K.Write();
 
     //closing the file
     rfile.Close();
