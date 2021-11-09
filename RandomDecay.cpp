@@ -16,6 +16,7 @@
 #define m_K 0.500 //Pion mass (GeV)
 #define eps 0.0001 //very little value that could be useful
 #define Nevents 10000 //numebr of random events generated
+#define sigma_resolution 0.03 //gaussian resolution of detector. This number is the value of std deviation
 
 int main(){
 
@@ -25,7 +26,6 @@ int main(){
     TString rootfname("./output.root");
     // Overwite output file if it already exists
     TFile rfile(rootfname, "RECREATE");
-
     // Open the ROOT file and make sure the file was opened successfully.
     // Typical cause for failure are: 1) wrong path, 2) no write privilege
     if( !rfile.IsOpen() ) {
@@ -34,76 +34,128 @@ int main(){
     }
     std::cout << "storing output in root file " << rootfname << std::endl;
 
-    // The two histograms instances (name, title, number of bins, range)
+    // The three histograms instances (name, title, number of bins, range)
     int nbins = 100;
-    TH1F invariant_m_pi("invariant_m_pi", "distribution of invariant mass of pion", nbins, 0, 5.279 + eps);
-    TH1F invariant_m_K("invariant_m_K", "distribution of invariant mass of K", nbins, 0, 5.279 + eps);
-
-// RANDOM MOMENTA GENERATION
+    TH1F invariant_m("Invariant Mass", "Distribution of invariant mass of #pi + K after the decay", nbins, 4.5, 6);
+    TH1F opening_angle("Opening Angle","Distribution of opening angle between #pi and K in LAB", nbins, 3, 3.2);
+    TH1F measured_m("Measured Invariant mass","Distribution of measured invariant mass of #pi + K after the decay", nbins, 4, 12);
+// DEFINITION OF 4-VECTORS
 
     // Create the B meson 4-momentum in the LAB frame
     TLorentzVector p4_B;
     double p_B = 0.300; // GeV
     // Flat metric, (- - - +) signature: m^2 = E^2 - p^2
     p4_B.SetPxPyPzE(p_B, 0, 0, sqrt(p_B*p_B+m_B*m_B));
-    std::cout << ">>> Meson B in the lab:" << std::endl;
+    std::cout << "\n>>> Meson B in the lab:" << std::endl;
     p4_B.Print();
 
     //momentum of generated particles in the CoM system 
     double p_star = sqrt(pow(m_B,4) + pow(m_pi,4) + pow(m_K,4) - 2*pow(m_K,2)*pow(m_pi,2) - 2*pow(m_K,2)*pow(m_B,2) - 2*pow(m_pi,2)*pow(m_B,2) )/(2*m_B);
-    std::cout << ">>> Value of p* in the ceneter of mass system is:\t" << p_star << std::endl;
+    std::cout << "\n>>> Value of p* in the ceneter of mass system is:\t" << p_star << std::endl;
     
 // RANDOM MOMENTA GENERATION
 
-    std::cout << ">>> Generating random sherical distribution for pion and K meson" << std::endl;
-    p4_B.BoostVector().Print();
-
+    std::cout << "\n>>> Generating random sherical distribution for pion and K meson.\nFollows some random samples (in teh LAB reference frame):\n" << std::endl;
     // Start up a new random generator... (we have a new: we will need a delete!)
     TRandom3* gen = new TRandom3();
     // ...exploiting the machine clock for the seed
     gen->SetSeed(0);
 
-    //local variables
+    //momentum for the sphere
     double px_star, py_star, pz_star;
-    TLorentzVector p4_pi, p4_K, p4_tot;
-
+    //four momenta of pion and K, and the sum of the two
+    TLorentzVector p4_pi_0, p4_K_0, p4_tot;
+    //four momenta measured from the detector
+    TLorentzVector p4_pi_meas, p4_K_meas;
+    //module of the measuren momentum of pion and K
+    double p_pi_meas, p_K_meas;
+    
     // Loop on the measurements
     for(int i=0; i<Nevents; ++i){
 
         gen->Sphere(px_star, py_star, pz_star, p_star);
         //Generate values for momentum in random direction in the CoM system:
-        p4_pi.SetPxPyPzE(px_star, py_star, pz_star, sqrt(p_star*p_star+m_pi*m_pi));
-        p4_K.SetPxPyPzE(-px_star, -py_star, -pz_star, sqrt(p_star*p_star+m_K*m_K));
-        //if (i%500 == 0 ) p4_pi.Print();
+        p4_pi_0.SetPxPyPzE(px_star, py_star, pz_star, sqrt( pow(p_star,2) + pow(m_pi,2) ));
+        p4_K_0.SetPxPyPzE(-px_star, -py_star, -pz_star, sqrt( pow(p_star,2) + pow(m_K,2) ));
+
         //Boosting these vectors from CoM to LAB frame
-        p4_pi.Boost(p4_B.BoostVector());
-        p4_K.Boost(p4_B.BoostVector());
-        //if (i%500 == 0 ) p4_pi.Print();
-        //invariant masses of the two particles
-        p4_tot = p4_pi + p4_K;
-        invariant_m_pi.Fill(p4_tot.M());
+        p4_pi_0.Boost( -p4_B.BoostVector() );
+        p4_K_0.Boost( -p4_B.BoostVector() );
+
+        //true invariant masses of the two particles
+        p4_tot = p4_pi_0 + p4_K_0;
+        invariant_m.Fill( p4_tot.M() );
+
+        //opening angle between the two particles
+        opening_angle.Fill( p4_K_0.Angle(p4_pi_0.Vect()) );
+
+        //including detector smearing effect. It changes only the 
+        p_pi_meas = gen->Gaus(p4_pi_0.P(), p4_pi_0.P()*sigma_resolution);
+        p_K_meas = gen->Gaus(p4_K_0.P(), p4_K_0.P()*sigma_resolution);
+
+        //definition of p4_pi_meas and p4_K_meas
+        p4_pi_meas.SetPtEtaPhiM(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), m_pi);
+        p4_K_meas.SetPtEtaPhiM(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), m_K);
+
+        //measured invariant masses of the two particles
+        p4_tot = p4_pi_meas + p4_K_meas;
+        measured_m.Fill(p4_tot.M());
 
     }
 
+    //aesthetic space
+    std::cout << "\n" << std::endl;
+
 //PLOTTING AND SAVING RESULTS
 
-    TCanvas canv("canv", "canvas for plotting", 1280, 1024);
+    //set canvas
+    TCanvas canv1("canv", "canvas for plotting", 1280, 1280);
+    //set axis titles
+    invariant_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
+    invariant_m.GetYaxis()->SetTitle("Number of events");
+    //draw and save
+    invariant_m.Draw();
+    canv1.SaveAs("./true-mass.pdf");
+    invariant_m.Write();
 
-    invariant_m_pi.GetXaxis()->SetTitle("Invariant mass for #pi [GeV]");
-    //invariant_m_K.GetXaxis()->SetTitle("Invariant mass for K [GeV]");
 
-    invariant_m_pi.Draw();
-    //invariant_m_K.Draw();
+    //set canvas
+    TCanvas canv2("canv", "canvas for plotting", 1280, 1280);
+    //set axis titles
+    opening_angle.GetXaxis()->SetTitle("Opening angle [rad]");
+    invariant_m.GetYaxis()->SetTitle("Number of events");
+    //draw and save
+    opening_angle.Draw();
+    canv2.SaveAs("./opening-angle.pdf");
+    opening_angle.Write();
 
-    canv.SaveAs("./true-mass.pdf");
+    //set canvas
+    TCanvas canv3("canv", "canvas for plotting", 1280, 1280);
+    //set axis titles
+    measured_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
+    measured_m.GetYaxis()->SetTitle("Number of events");
+    //draw and save
+    measured_m.Draw("pe");
+    canv3.SaveAs("./measured-mass.pdf");
+    measured_m.Write();
+
+/******************************* NEED TO UNDERSTAND HOW TO SUPERPOSITION TWO PLOT *******************************/
+    //set canvas
+    TCanvas canv4("canv", "canvas for plotting", 1280, 1280);
+    canv4.Divide(1,2);
+    //set axis titles
+    measured_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
+    measured_m.GetYaxis()->SetTitle("Number of events");
+    //draw and save
+    canv4.cd(1);
+    invariant_m.Draw();
+    canv4.cd(2);
+    measured_m.Draw("pe");
+    canv4.SaveAs("./invariant-mass.pdf");
 
 //CLOSING THINGS AND DELETING OBJECTS
 
     delete gen;
-
-    //Writing files
-    invariant_m_pi.Write();
-    //invariant_m_K.Write();
 
     //closing the file
     rfile.Close();
