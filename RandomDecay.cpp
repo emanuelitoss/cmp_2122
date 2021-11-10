@@ -121,7 +121,7 @@ int main(){
 
     // True inavriant mass of the system in the LAB
     // Set canvas
-    TCanvas canv1("canv", "canvas for plotting", 1280, 1280);
+    TCanvas canv1("canv", "canvas for plotting", 1500, 1280);
     // Set axis labels
     invariant_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
     invariant_m.GetYaxis()->SetTitle("Number of events");
@@ -134,7 +134,7 @@ int main(){
 
     // Opening angle between pion and kaon in the LAB
     // Set canvas
-    TCanvas canv2("canv", "canvas for plotting", 1280, 1280);
+    TCanvas canv2("canv", "canvas for plotting", 1500, 1280);
     // Set axis labels
     opening_angle.GetXaxis()->SetTitle("Opening angle [rad]");
     opening_angle.GetYaxis()->SetTitle("Number of events");
@@ -147,7 +147,7 @@ int main(){
 
     // Measured invariant mass of the system in the LAB
     // Set canvas
-    TCanvas canv3("canv", "canvas for plotting", 1280, 1280);
+    TCanvas canv3("canv", "canvas for plotting", 1500, 1280);
     // Set axis labels
     measured_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
     measured_m.GetYaxis()->SetTitle("Number of events");
@@ -176,12 +176,6 @@ int main(){
     // Save
     canv4.SaveAs("./invariant-mass.pdf");
 */
-
-    TCanvas *canv4 = new TCanvas("canv4","canvas for two hists", 1280, 1280);
-    gStyle->SetOptStat(kFALSE);
-    invariant_m.Draw();
-    canv4->Update();
-    canv4->SaveAs("./invariant-mass.pdf");
 
 //CLOSING THINGS AND DELETING OBJECTS
 
