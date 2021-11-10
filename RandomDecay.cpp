@@ -11,6 +11,8 @@ using std::endl;
 #include "TFile.h"
 #include "TLorentzVector.h"
 #include "TMath.h"
+#include "TStyle.h"
+#include "TGaxis.h"
 
 // Two particles decay parameters
 // If you want to perform an other experiment, change these quantities
@@ -124,6 +126,8 @@ int main(){
     invariant_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
     invariant_m.GetYaxis()->SetTitle("Number of events");
     // Draw and save
+    invariant_m.SetFillColor(kGray+2);
+    invariant_m.SetLineColor(kGray+2);
     invariant_m.Draw();
     canv1.SaveAs("./true-mass.pdf");
     invariant_m.Write();
@@ -133,8 +137,10 @@ int main(){
     TCanvas canv2("canv", "canvas for plotting", 1280, 1280);
     // Set axis labels
     opening_angle.GetXaxis()->SetTitle("Opening angle [rad]");
-    invariant_m.GetYaxis()->SetTitle("Number of events");
+    opening_angle.GetYaxis()->SetTitle("Number of events");
     // Draw and save
+    opening_angle.SetLineColor(kOrange+9);
+    opening_angle.SetFillColor(kOrange+6);
     opening_angle.Draw();
     canv2.SaveAs("./opening-angle.pdf");
     opening_angle.Write();
@@ -146,12 +152,13 @@ int main(){
     measured_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
     measured_m.GetYaxis()->SetTitle("Number of events");
     // Draw and save
+    measured_m.SetLineColor(kGreen+3);
     measured_m.Draw("pe");
     canv3.SaveAs("./measured-mass.pdf");
     measured_m.Write();
 
 /******************************* NEED TO UNDERSTAND HOW TO SUPERPOSE TWO PLOTS *******************************/
-
+/*
     // True and measured invariant mass of the system in LAB in one graph
     // Set canvas
     TCanvas canv4("canv", "canvas for plotting", 1280, 1280);
@@ -168,6 +175,13 @@ int main(){
     measured_m.Draw("pe");
     // Save
     canv4.SaveAs("./invariant-mass.pdf");
+*/
+
+    TCanvas *canv4 = new TCanvas("canv4","canvas for two hists", 1280, 1280);
+    gStyle->SetOptStat(kFALSE);
+    invariant_m.Draw();
+    canv4->Update();
+    canv4->SaveAs("./invariant-mass.pdf");
 
 //CLOSING THINGS AND DELETING OBJECTS
 
