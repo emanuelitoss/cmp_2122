@@ -125,8 +125,8 @@ int main(){
 	double p_pi_meas = gen ->Gaus(p4_pi_0.P(), p4_pi_0.P()*sigma_res);
 	double p_K_meas = gen ->Gaus(p4_K_0.P(), p4_K_0.P()*sigma_res);
 	
-	p4_pi_meas.SetPtEtaPhiM(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), m_pi);
-	p4_K_meas.SetPtEtaPhiM(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), m_K);
+	p4_pi_meas.SetPtEtaPhiE(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), sqrt(m_pi*m_pi + p_pi_meas*p_pi_meas));
+        p4_K_meas.SetPtEtaPhiE(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), sqrt(m_K*m_K + p_K_meas*p_K_meas));
 	
 	p4_tot=p4_pi_meas+p4_K_meas;
 	double M_meas= p4_tot.M();
@@ -156,6 +156,17 @@ int main(){
   h_measM.GetYaxis()->SetTitle("# events");
   h_measM.Draw("pe");
   canv.SaveAs("./measured-mass.pdf");
+	
+	  
+   TCanvas *c1 = new TCanvas("c1","true and measured mass [GeV]",600,400);
+
+   h_invM.Draw();
+   c1->Update();
+
+   h_measM.SetLineColor(kRed);
+   h_measM.Draw("same");
+
+   c1->SaveAs("./invariant-mass.pdf");
 
   // Delete the random generator now we are done with it
   // [We had new, here is delete!]
