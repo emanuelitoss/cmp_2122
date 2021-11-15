@@ -25,7 +25,10 @@ using std::endl;
 #define m_pi 0.140 // Pion mass (GeV)
 #define m_K 0.500 // Pion mass (GeV)
 #define Nevents 10000 // Numebr of random events generated
-#define sigma_resolution 0.1 // Gaussian resolution of detector. This number is the value of std deviation
+#define sigma_resolution 0.03 // Gaussian resolution of detector. This number is the value of std deviation
+#define resolution1 0.01
+#define resolution2 0.05
+#define resolution3 0.10
 
 int main(){
 
@@ -47,8 +50,11 @@ int main(){
     int nbins = 100;
     TH1F invariant_m("Invariant Mass", "Distribution of invariant mass of #pi + K after the decay", nbins, 2, 8);
     TH1F opening_angle("Opening Angle","Distribution of opening angle between #pi and K in LAB", nbins, 3, 3.2);
-    TH1F measured_m("Measured Invariant mass","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8);
+    TH1F measured_m("Measured Invariant mass","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
 
+    TH1F measured_m_1("Measured Invariant mass (1%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
+    TH1F measured_m_2("Measured Invariant mass (5%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
+    TH1F measured_m_3("Measured Invariant mass (10%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
 
 // DEFINITION OF FOUR MOMENTA
 
@@ -69,8 +75,19 @@ int main(){
     TTree* myTree = new TTree("datatree", "tree containing our data");
     myTree->Branch("p_B", &p_B, "momentum of B");
     int nDau = 2;
-    myTree->Branch("nDau", &nDau, "boh");
-    /*** continue with all branches... ***/
+    double mass1, mass2, p1, p2, theta1, theta2, phi1, phi2;
+    myTree->Branch("nDau", &nDau, "number of daughters particles");
+    myTree->Branch("nmass1", &nmass1, "invariant mass of pion");
+    myTree->Branch("nmass2", &nmass2, "invariant mass of kaon");
+    myTree->Branch("p1", &p1, "momentum of pion");
+    myTree->Branch("p2", &p2, "momentum of kaon");
+    myTree->Branch("theta1", &theta1, "theta of pion");
+    myTree->Branch("theta2", &theta2, "theta of kaon");
+    myTree->Branch("phi1", &phi1, "phi of pion");
+    myTree->Branch("phi2", &phi2, "phi of kaon");
+
+    //ad ogni ciclo: tree->Fill();
+    //tree->Write();  tree->Print();  tree->Close();
 
 // RANDOM MOMENTA GENERATION
 
@@ -111,6 +128,8 @@ int main(){
         // Fill the 2nd hist with opening angle between the two particles
         opening_angle.Fill( p4_K_0.Angle(p4_pi_0.Vect()) );
 
+    // sigma_resolution
+
         // Including detector resolution
         // It changes only the value of module of momenta, not direction
         p_pi_meas = gen->Gaus(p4_pi_0.P(), p4_pi_0.P()*sigma_resolution);
@@ -125,7 +144,67 @@ int main(){
         // Filling the 3rd hist with measured invariant masses
         measured_m.Fill(p4_tot.M());
 
+        mass1 = p4_pi_0.M();
+        mass2 = p4_K_0.M();
+        p1 = p_pi_meas;
+        p2 = p_K_meas;
+        theta1 = p4_pi_0.Eta();
+        theta2 = p4_K_0.Eta();
+        phi1 = p4_pi_0.Phi();
+        phi2 = p4_K_0.Phi();
+
+        myTree -> Fill();
+
+    // resolution 1
+
+        // Including detector resolution
+        // It changes only the value of module of momenta, not direction
+        p_pi_meas = gen->Gaus(p4_pi_0.P(), p4_pi_0.P()*resolution1);
+        p_K_meas = gen->Gaus(p4_K_0.P(), p4_K_0.P()*resolution1);
+
+        // Definitions of measured momenta inf the LAB reference frame
+        p4_pi_meas.SetPtEtaPhiE(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), sqrt(m_pi*m_pi + p_pi_meas*p_pi_meas));
+        p4_K_meas.SetPtEtaPhiE(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), sqrt(m_K*m_K + p_K_meas*p_K_meas));
+
+        // Measured invariant masses of the two particles in LAB, involving smearing effect
+        p4_tot = p4_pi_meas + p4_K_meas;
+        // Filling hist with measured invariant masses
+        measured_m_1.Fill(p4_tot.M());
+
+    //resolution 2
+
+        // Including detector resolution
+        // It changes only the value of module of momenta, not direction
+        p_pi_meas = gen->Gaus(p4_pi_0.P(), p4_pi_0.P()*resolution2);
+        p_K_meas = gen->Gaus(p4_K_0.P(), p4_K_0.P()*resolution2);
+
+        // Definitions of measured momenta inf the LAB reference frame
+        p4_pi_meas.SetPtEtaPhiE(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), sqrt(m_pi*m_pi + p_pi_meas*p_pi_meas));
+        p4_K_meas.SetPtEtaPhiE(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), sqrt(m_K*m_K + p_K_meas*p_K_meas));
+
+        // Measured invariant masses of the two particles in LAB, involving smearing effect
+        p4_tot = p4_pi_meas + p4_K_meas;
+        // Filling hist with measured invariant masses
+        measured_m_2.Fill(p4_tot.M());
+        
+    //resolution 3
+
+        // Including detector resolution
+        // It changes only the value of module of momenta, not direction
+        p_pi_meas = gen->Gaus(p4_pi_0.P(), p4_pi_0.P()*resolution3);
+        p_K_meas = gen->Gaus(p4_K_0.P(), p4_K_0.P()*resolution3);
+
+        // Definitions of measured momenta inf the LAB reference frame
+        p4_pi_meas.SetPtEtaPhiE(p_pi_meas, p4_pi_0.Eta(), p4_pi_0.Phi(), sqrt(m_pi*m_pi + p_pi_meas*p_pi_meas));
+        p4_K_meas.SetPtEtaPhiE(p_K_meas, p4_K_0.Eta(), p4_K_0.Phi(), sqrt(m_K*m_K + p_K_meas*p_K_meas));
+
+        // Measured invariant masses of the two particles in LAB, involving smearing effect
+        p4_tot = p4_pi_meas + p4_K_meas;
+        // Filling hist with measured invariant masses
+        measured_m_3.Fill(p4_tot.M());
     }
+
+
 
 //PLOTTING AND SAVING RESULTS
 
@@ -161,23 +240,29 @@ int main(){
     measured_m.Draw("pe");
     canv1.SaveAs("./measured-mass.pdf");
 
-    // True and measured invariant mass of the system in LAB in one graph
-    canv1.Divide(1,2);
-    // Set axis labels
-    measured_m.GetXaxis()->SetTitle("Invariant mass for #pi + K [GeV]");
-    measured_m.GetYaxis()->SetTitle("Number of events");
-    // Draw first plot
-    canv1.cd(1);
+    // ---
+    TCanvas *c1 = new TCanvas("c1","true and measured mass [GeV]",600,400);
     invariant_m.Draw();
-    // Draw second plot
-    canv1.cd(2);
-    measured_m.Draw("pe");
-    // Save
-    canv1.SaveAs("./invariant-mass.pdf");
+    c1->Update();
+    measured_m.SetLineColor(kGreen+3);
+    measured_m.Draw("pe""same");
+    c1->SaveAs("./invariant-mass.pdf");
 
+    TCanvas *c2 = new TCanvas("c2","measured masses [GeV]",600,400);
+    measured_m_1.SetLineColor(kGreen+3);
+    measured_m_1.Draw();
+    c2->Update();
+    measured_m_2.SetLineColor(kRed+2);
+    measured_m_2.Draw("same");
+    c2->Update();
+    measured_m_3.SetLineColor(kBlue+2);
+    measured_m_3.Draw("same");
+    c2->SaveAs("./measured-masses.pdf");
 
 //CLOSING THINGS AND DELETING OBJECTS
 
+    delete c1;
+    delete c2;
     delete gen;
 
     //closing the file
