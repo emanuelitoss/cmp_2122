@@ -18,6 +18,8 @@ using std::endl;
 #include "TString.h"
 #include "TStyle.h"
 #include "TGaxis.h"
+#include "TLegend.h"
+#include "TLegendEntry.h"
 
 // Two particles decay parameters
 // If you want to perform an other experiment, change these quantities
@@ -75,7 +77,7 @@ int main(){
     TTree* myTree = new TTree("datatree", "tree containing our data");
     myTree->Branch("p_B", &p_B, "momentum of B");
     int nDau = 2;
-    double mass1, mass2, p1, p2, theta1, theta2, phi1, phi2;
+    double nmass1, nmass2, p1, p2, theta1, theta2, phi1, phi2;
     myTree->Branch("nDau", &nDau, "number of daughters particles");
     myTree->Branch("nmass1", &nmass1, "invariant mass of pion");
     myTree->Branch("nmass2", &nmass2, "invariant mass of kaon");
@@ -85,9 +87,6 @@ int main(){
     myTree->Branch("theta2", &theta2, "theta of kaon");
     myTree->Branch("phi1", &phi1, "phi of pion");
     myTree->Branch("phi2", &phi2, "phi of kaon");
-
-    //ad ogni ciclo: tree->Fill();
-    //tree->Write();  tree->Print();  tree->Close();
 
 // RANDOM MOMENTA GENERATION
 
@@ -144,8 +143,8 @@ int main(){
         // Filling the 3rd hist with measured invariant masses
         measured_m.Fill(p4_tot.M());
 
-        mass1 = p4_pi_0.M();
-        mass2 = p4_K_0.M();
+        nmass1 = p4_pi_0.M();
+        nmass2 = p4_K_0.M();
         p1 = p_pi_meas;
         p2 = p_K_meas;
         theta1 = p4_pi_0.Eta();
@@ -240,15 +239,19 @@ int main(){
     measured_m.Draw("pe");
     canv1.SaveAs("./measured-mass.pdf");
 
-    // ---
+    //Measured and true masses in a single plot
     TCanvas *c1 = new TCanvas("c1","true and measured mass [GeV]",600,400);
     invariant_m.Draw();
+    // overwriting the second plot
     c1->Update();
     measured_m.SetLineColor(kGreen+3);
     measured_m.Draw("pe""same");
     c1->SaveAs("./invariant-mass.pdf");
 
+    // invariant masses with three different resolutions
     TCanvas *c2 = new TCanvas("c2","measured masses [GeV]",600,400);
+    // removing Canva legend
+    gStyle->SetOptStat(0);
     measured_m_1.SetLineColor(kGreen+3);
     measured_m_1.Draw();
     c2->Update();
@@ -257,15 +260,29 @@ int main(){
     c2->Update();
     measured_m_3.SetLineColor(kBlue+2);
     measured_m_3.Draw("same");
+    // legend options
+    auto legend = new TLegend(0.1,0.7,0.48,0.9);
+    legend->SetHeader("Measured masses:","C"); // option "C" allows to center the header
+    legend->AddEntry(&measured_m_1,"Resolution of 1%","f");
+    legend->AddEntry(&measured_m_2,"Resolution of 5%","f");
+    legend->AddEntry(&measured_m_3,"Resolution of 10%","f");
+    legend->Draw();
+    // saving plot
     c2->SaveAs("./measured-masses.pdf");
 
 //CLOSING THINGS AND DELETING OBJECTS
 
+    // end of the TTree
+    myTree->Write();
+    myTree->Print();
+
+    // deleting pointers
     delete c1;
     delete c2;
+    delete legend;
     delete gen;
 
-    //closing the file
+    //closing the output root file
     rfile.Close();
 
     //exit
