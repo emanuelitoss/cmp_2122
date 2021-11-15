@@ -22,44 +22,45 @@ using std::endl;
 #include "TLegendEntry.h"
 
 // Two particles decay parameters
-// If you want to perform an other experiment, change these quantities
+// If you want to perform other experiments, change these quantities
 #define m_B 5.279 // Meson mass (GeV)
 #define m_pi 0.140 // Pion mass (GeV)
 #define m_K 0.500 // Pion mass (GeV)
 #define Nevents 10000 // Numebr of random events generated
 #define sigma_resolution 0.03 // Gaussian resolution of detector. This number is the value of std deviation
+// three other gaussian resolutions for detector models
 #define resolution1 0.01
 #define resolution2 0.05
 #define resolution3 0.10
 
 int main(){
 
-//FILE OPENING AND HISTOGRAMS SETTINGS
+// FILE OPENING
 
     // Open TFile for output
     TString rootfname("./output.root");
     // Overwite output file if it already exists
     TFile rfile(rootfname, "RECREATE");
     // Open the ROOT file and make sure the file was opened successfully.
-    // Typical cause for failure are: 1) wrong path, 2) no write privilege
     if( !rfile.IsOpen() ) {
         cout << "problems creating root file. existing... " << endl;
         exit(-1);
     }
     cout << "storing output in root file " << rootfname << endl;
 
+// HISTOGRAMS SETTINGS
+
     // The three histograms instances (name, title, number of bins, range)
     int nbins = 100;
     TH1F invariant_m("Invariant Mass", "Distribution of invariant mass of #pi + K after the decay", nbins, 2, 8);
     TH1F opening_angle("Opening Angle","Distribution of opening angle between #pi and K in LAB", nbins, 3, 3.2);
     TH1F measured_m("Measured Invariant mass","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
-
     // Other three histograms for three different resolutions 
     TH1F measured_m_1("Measured Invariant mass (1%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
     TH1F measured_m_2("Measured Invariant mass (5%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
     TH1F measured_m_3("Measured Invariant mass (10%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
 
-// DEFINITION OF FOUR MOMENTA
+// DEFINITION OF PHYSICAL QUANTITIES
 
     // Create the B meson 4-momentum in the LAB frame
     TLorentzVector p4_B;
@@ -106,7 +107,11 @@ int main(){
     TLorentzVector p4_pi_meas, p4_K_meas;
     // Module of the measured momentum of pion and K
     double p_pi_meas, p_K_meas;
-    
+
+// DIFFERENT DETECTORS SETTINGS
+
+    */ METTERE COSE QUI
+
     // Loop over the events
     for(int i=0; i<Nevents; ++i){
 
