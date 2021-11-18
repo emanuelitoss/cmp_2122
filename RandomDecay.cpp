@@ -54,6 +54,7 @@ int main(){
     TH1F opening_angle("Opening Angle","Distribution of opening angle between #pi and K in LAB", nbins, 3, 3.2);
     TH1F measured_m("Measured Invariant mass","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
 
+    // Other three histograms for three different resolutions 
     TH1F measured_m_1("Measured Invariant mass (1%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
     TH1F measured_m_2("Measured Invariant mass (5%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
     TH1F measured_m_3("Measured Invariant mass (10%)","Distribution of measured invariant mass of #pi + K after the decay", nbins, 2, 8 );
