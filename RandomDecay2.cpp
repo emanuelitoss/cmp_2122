@@ -70,7 +70,7 @@ int main(){
     cout << "\n>>> Meson B in the lab:" << endl;
     p4_B.Print();
 
-    // Momentum of generated particles in the CoM system 
+    // Momentum of generated particles in the CoM system
     double p_star = sqrt(pow(m_B,4) + pow(m_pi,4) + pow(m_K,4) - 2*pow(m_K,2)*pow(m_pi,2) - 2*pow(m_K,2)*pow(m_B,2) - 2*pow(m_pi,2)*pow(m_B,2) )/(2*m_B);
     cout << ">>> Value of momentum of produced particles in the ceneter of mass system is\t p* = " << p_star << "\n" << endl;
 
@@ -79,7 +79,8 @@ int main(){
     TTree* myTree = new TTree("datatree", "tree containing our data");
     myTree->Branch("p_B", &p_B, "momentum of B");
     int nDau = 2;
-    double nmass1, nmass2, p1, p2, theta1, theta2, phi1, phi2;
+    double nmass1, nmass2, theta1, theta2, phi1, phi2;
+    std::vector<double> p1, p2;
     myTree->Branch("nDau", &nDau, "number of daughters particles");
     myTree->Branch("nmass1", &nmass1, "invariant mass of pion");
     myTree->Branch("nmass2", &nmass2, "invariant mass of kaon");
@@ -108,9 +109,7 @@ int main(){
     // Module of the measured momentum of pion and K
     double p_pi_meas, p_K_meas;
 
-// DIFFERENT DETECTORS SETTINGS
-
-    */ METTERE COSE QUI
+// RANDOM GENERATOR
 
     // Loop over the events
     for(int i=0; i<Nevents; ++i){
@@ -151,14 +150,12 @@ int main(){
 
         nmass1 = p4_pi_0.M();
         nmass2 = p4_K_0.M();
-        p1 = p_pi_meas;
-        p2 = p_K_meas;
+        //p1 = p_pi_meas;
+        //p2 = p_K_meas;
         theta1 = p4_pi_0.Eta();
         theta2 = p4_K_0.Eta();
         phi1 = p4_pi_0.Phi();
         phi2 = p4_K_0.Phi();
-
-        myTree -> Fill();
 
     // resolution 1
 
@@ -176,6 +173,9 @@ int main(){
         // Filling hist with measured invariant masses
         measured_m_1.Fill(p4_tot.M());
 
+        p1.push_back(p_pi_meas);
+        p2.push_back(p_K_meas);
+
     //resolution 2
 
         // Including detector resolution
@@ -191,6 +191,9 @@ int main(){
         p4_tot = p4_pi_meas + p4_K_meas;
         // Filling hist with measured invariant masses
         measured_m_2.Fill(p4_tot.M());
+
+        p1.push_back(p_pi_meas);
+        p2.push_back(p_K_meas);
         
     //resolution 3
 
@@ -207,9 +210,16 @@ int main(){
         p4_tot = p4_pi_meas + p4_K_meas;
         // Filling hist with measured invariant masses
         measured_m_3.Fill(p4_tot.M());
+
+        p1.push_back(p_pi_meas);
+        p2.push_back(p_K_meas);
+
+        myTree -> Fill();
+
+        p1.clear();
+        p2.clear();
+
     }
-
-
 
 //PLOTTING AND SAVING RESULTS
 
