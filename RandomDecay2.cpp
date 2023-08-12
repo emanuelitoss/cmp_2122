@@ -1,4 +1,4 @@
-// Standard library header files
+// Standard cpp library header files
 #include <iostream>
 #include <cmath>
 #include <vector>
